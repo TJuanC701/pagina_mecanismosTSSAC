@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Prueba de HTML con Firebase</title>
+</head>
+
+<body>
+
+    <h1>Registro de usuarios</h1>
+
+    <input type="text"
+           id="username"
+           placeholder="Ingrese el nombre de usuario">
+
+    <button onclick="guardar()">Guardar registro</button>
+    <button onclick="mostrar()">Mostrar registros de usuarios</button>
+
+    <hr>
+
+    <div id="resultados"></div>
+
+    <script type="module">
+
+        import { initializeApp }
+        from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+
+        import {
+            getFirestore,
+            collection,
+            addDoc,
+            getDocs
+        } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+         const firebaseConfig = {
+    apiKey: "AIzaSyDcc5mogPIqtzzbdBgZ-vDsBhq0M8PAfsw",
+    authDomain: "proyecto-7ea7f.firebaseapp.com",
+    projectId: "proyecto-7ea7f",
+    storageBucket: "proyecto-7ea7f.firebasestorage.app",
+    messagingSenderId: "484832673024",
+    appId: "1:484832673024:web:0177dc12aa68e1d1b887e5"
+  };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.guardar = async function () {
+
+            const username =
+                document.getElementById("username").value;
+
+            if (username === "") {
+                alert("Ingrese un nombre de usuario");
+                return;
+            }
+
+            try {
+
+                await addDoc(
+                    collection(db, "usuarios"),
+                    {
+                        username: username
+                    }
+                );
+
+                alert("Usuario registrado correctamente");
+
+                document.getElementById("username").value = "";
+
+            } catch (error) {
+
+                console.log(error);
+
+                alert("Error al guardar el usuario");
+            }
+        };
+
+        window.mostrar = async function () {
+
+            try {
+
+                const consulta =
+                    await getDocs(
+                        collection(db, "usuarios")
+                    );
+
+                let salida = "";
+
+                consulta.forEach((doc) => {
+
+                    salida +=
+                        doc.data().username + "<br>";
+
+                });
+
+                document.getElementById("resultados")
+                        .innerHTML = salida;
+
+            } catch (error) {
+
+                console.log(error);
+
+                alert("Error al consultar usuarios");
+            }
+
+        };
+
+    </script>
+
+</body>
+</html>
+
+ 
